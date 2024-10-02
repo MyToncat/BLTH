@@ -1,16 +1,16 @@
 import BaseModule from '../../BaseModule'
-import { isTimestampToday, delayToNextMoment, tsm, isNowIn } from '../../../library/luxon'
-import BAPI from '../../../library/bili-api'
-import { Istatus } from '../../../types/moduleStatus'
+import { isTimestampToday, delayToNextMoment, tsm, isNowIn } from '@/library/luxon'
+import BAPI from '@/library/bili-api'
+import type { ModuleStatusTypes } from '@/types'
 
-class SilverToCoin extends BaseModule {
+class SilverToCoinTask extends BaseModule {
   config = this.moduleStore.moduleConfig.DailyTasks.OtherTasks.silverToCoin
 
-  set status(s: Istatus) {
+  set status(s: ModuleStatusTypes) {
     this.moduleStore.moduleStatus.DailyTasks.OtherTasks.silverToCoin = s
   }
 
-  private async exchange() {
+  private async exchange(): Promise<void> {
     try {
       const response = await BAPI.live.silver2coin()
       this.logger.log(`BAPI.live.silver2coin response`, response)
@@ -33,19 +33,18 @@ class SilverToCoin extends BaseModule {
     }
   }
 
-  public async run() {
+  public run(): void {
     this.logger.log('银瓜子换硬币模块开始运行')
-    if (this.config.enabled) {
-      if (!isTimestampToday(this.config._lastCompleteTime)) {
-        this.status = 'running'
-        await this.exchange()
+
+    if (!isTimestampToday(this.config._lastCompleteTime)) {
+      this.status = 'running'
+      this.exchange()
+    } else {
+      if (isNowIn(0, 0, 0, 5)) {
+        this.logger.log('昨天的银瓜子换硬币任务已经完成过了，等到今天的00:05再执行')
       } else {
-        if (!isNowIn(0, 0, 0, 5)) {
-          this.logger.log('今天已经完成过银瓜子换硬币任务了')
-          this.status = 'done'
-        } else {
-          this.logger.log('昨天的银瓜子换硬币任务已经完成过了，等到今天的00:05再执行')
-        }
+        this.logger.log('今天已经完成过银瓜子换硬币任务了')
+        this.status = 'done'
       }
     }
 
@@ -55,4 +54,4 @@ class SilverToCoin extends BaseModule {
   }
 }
 
-export default SilverToCoin
+export default SilverToCoinTask

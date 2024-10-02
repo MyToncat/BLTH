@@ -1,6 +1,6 @@
 import { DateTime, Settings } from 'luxon'
 
-interface Iduration {
+interface Duration {
   ms: number
   str: string
 }
@@ -49,9 +49,8 @@ function isTimestampToday(timestamp: number, hour: number = 0, minute: number = 
  *
  * @param hour 小时（0-23），默认0
  * @param minute 分钟（0-59），默认5
- * @returns 毫秒数
  */
-function delayToNextMoment(hour: number = 0, minute: number = 5): Iduration {
+function delayToNextMoment(hour: number = 0, minute: number = 5): Duration {
   const now = DateTime.now()
   let nextTime = DateTime.local(now.year, now.month, now.day, hour, minute)
 
@@ -60,8 +59,8 @@ function delayToNextMoment(hour: number = 0, minute: number = 5): Iduration {
     // 计算距离明天 hour 点 minute 分的时间
     nextTime = nextTime.plus({ days: 1 })
   }
-  // 否则就直接算距离今天 hour 点 minute 分的时间
 
+  // 否则就直接算距离今天 hour 点 minute 分的时间
   const diff = nextTime.diff(now)
 
   return {
@@ -77,6 +76,9 @@ function delayToNextMoment(hour: number = 0, minute: number = 5): Iduration {
 
 /**
  * 判断现在是不是处在目标时间范围内
+ *
+ * 如果开始时间晚于结束时间，则将结束时间视为第二天的时间
+ *
  * @param startHour 开始小时
  * @param startMinute 开始分钟
  * @param endHour 结束小时
@@ -90,7 +92,12 @@ function isNowIn(
 ): boolean {
   const now = DateTime.now()
   const start = DateTime.local(now.year, now.month, now.day, startHour, startMinute)
-  const end = DateTime.local(now.year, now.month, now.day, endHour, endMinute)
+  let end = DateTime.local(now.year, now.month, now.day, endHour, endMinute)
+
+  if (start > end) {
+    end = end.plus({ days: 1 })
+  }
+
   return now >= start && now < end
 }
 

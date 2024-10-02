@@ -1,7 +1,7 @@
 import Request from '../request'
 import { Live, LiveTrace, Main, Vc } from './response'
 
-interface Irequests {
+interface Requests {
   live: Request
   liveTrace: Request
   passport: Request
@@ -10,7 +10,7 @@ interface Irequests {
   raw: Request
 }
 
-interface IbapiMethods {
+interface BapiMethods {
   live: {
     roomGiftConfig: (
       room_id?: number,
@@ -29,14 +29,24 @@ interface IbapiMethods {
       jumpfrom?: number,
       fontsize?: number,
       color?: number,
-      bubble?: number
+      bubble?: number,
+      reply_mid?: number,
+      reply_attr?: number,
+      replay_dmid?: unknown,
+      statistics?: string
     ) => Promise<Live.SendMsg>
-    likeReport: (room_id: number, anchor_id: number) => Promise<Live.LikeReport>
-    getInfoByRoom: (room_id: number) => Promise<Live.GetInfoByRoom>
+    likeReport: (
+      room_id: number,
+      anchor_id: number,
+      click_time?: number,
+      visit_id?: string
+    ) => Promise<Live.LikeReport>
+    getInfoByRoom: (room_id: number, web_location?: string) => Promise<Live.GetInfoByRoom>
     getUserTaskProgress: (target_id?: number) => Promise<Live.GetUserTaskProgress>
     userTaskReceiveRewards: (target_id?: number) => Promise<Live.UserTaskReceiveRewards>
     silver2coin: (visit_id?: string) => Promise<Live.Silver2coin>
     coin2silver: (num: number, platform?: string, visit_id?: string) => Promise<Live.Coin2silver>
+    wearMedal: (medal_id: number, visit_id?: string) => Promise<Live.WearMedal>
   }
   liveTrace: {
     E: (
@@ -63,36 +73,44 @@ interface IbapiMethods {
     nav: () => Promise<Main.Nav>
     reward: () => Promise<Main.Reward>
     dynamicAll: (
-      type: string,
+      type?: string,
       page?: number,
       timezone_offset?: number,
-      features?: string
+      platform?: string,
+      features?: string,
+      web_location?: string,
+      x_bili_device_req_json?: string,
+      x_bili_web_req_json?: string
     ) => Promise<Main.DynamicAll>
     videoHeartbeat: (
-      aid: string,
-      cid?: string,
+      aid: number,
+      cid?: number,
+      type?: number,
+      sub_type?: number,
+      dt?: number,
+      play_type?: number,
       realtime?: number,
       played_time?: number,
       real_played_time?: number,
       refer_url?: string,
       quality?: number,
       video_duration?: number,
-      type?: number,
-      sub_type?: number,
-      play_type?: number,
-      dt?: number,
       last_play_progress_time?: number,
       max_play_progress_time?: number,
+      outer?: number,
       spmid?: string,
       from_spmid?: string,
-      extra?: string
+      session?: string,
+      extra?: string,
+      web_location?: number
     ) => Promise<Main.VideoHeartbeat>
     share: (
       aid: string,
       source?: string,
       eab_x?: number,
       ramval?: number,
-      ga?: number
+      ga?: number,
+      referer?: string
     ) => Promise<Main.Share>
     coinAdd: (
       aid: string,
@@ -105,11 +123,16 @@ interface IbapiMethods {
       ga?: number
     ) => Promise<Main.CoinAdd>
     videoRelation: (aid: string, bvid?: string) => Promise<Main.VideoRelation>
+    vip: {
+      myPrivilege: (web_location?: string) => Promise<Main.Vip.MyPrivilege>
+      receivePrivilege: (type: number, platform?: string) => Promise<Main.Vip.ReceivePrivilege>
+      addExperience: () => Promise<Main.Vip.AddExperience>
+    }
   }
   vc: {
-    myGroups: (build?: numeber, mobi_app?: string) => Promise<Vc.MyGroups>
+    myGroups: (build?: number, mobi_app?: string) => Promise<Vc.MyGroups>
     signIn: (group_id: number, owner_id: number) => Promise<Vc.SignIn>
   }
 }
 
-export { Irequests, IbapiMethods }
+export { Requests, BapiMethods }

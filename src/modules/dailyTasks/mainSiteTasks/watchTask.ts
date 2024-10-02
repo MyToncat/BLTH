@@ -1,34 +1,27 @@
 import BaseModule from '../../BaseModule'
-import { isTimestampToday, delayToNextMoment, tsm, isNowIn } from '../../../library/luxon'
-import { useBiliStore } from '../../../stores/useBiliStore'
-import { MainData } from '../../../library/bili-api/data'
-import BAPI from '../../../library/bili-api'
+import { isTimestampToday, delayToNextMoment, tsm, isNowIn } from '@/library/luxon'
+import { useBiliStore } from '@/stores/useBiliStore'
+import BAPI from '@/library/bili-api'
+import type { ModuleStatusTypes } from '@/types'
 import _ from 'lodash'
-import { Istatus } from '../../../types/moduleStatus'
 
 class WatchTask extends BaseModule {
   config = this.moduleStore.moduleConfig.DailyTasks.MainSiteTasks.watch
 
-  set status(s: Istatus) {
+  set status(s: ModuleStatusTypes) {
     this.moduleStore.moduleStatus.DailyTasks.MainSiteTasks.watch = s
   }
 
-  private getAid(): string {
-    const biliStore = useBiliStore()
-    if (!_.isEmpty(biliStore.dynamicVideos)) {
-      // 当 biliStore.dynamicVideos 不是 null 或 [] 时
-      // 返回第一个视频的 aid
-      return (biliStore.dynamicVideos as MainData.DynamicAll.Item[])[0].modules.module_dynamic.major
-        .archive.aid
-    } else {
-      // 否则返回 '2'
-      return '2'
-    }
+  /**
+   * 获取第一个视频的 aid
+   */
+  private getAid(): number {
+    return Number(useBiliStore().dynamicVideos![0].modules.module_dynamic.major.archive.aid)
   }
 
-  private async watch(aid: string) {
+  private async watch(aid: number) {
     try {
-      const response = await BAPI.main.videoHeartbeat(aid)
+      const response = await BAPI.main.videoHeartbeat(aid, _.random(1000000000, 2000000000))
       this.logger.log(`BAPI.main.videoHeartbeat(${aid}) response`, response)
       if (response.code === 0) {
         this.logger.log('每日观看视频任务已完成')
@@ -44,27 +37,48 @@ class WatchTask extends BaseModule {
     }
   }
 
+  private runCheck(): boolean {
+    const biliStore = useBiliStore()
+
+    if (!biliStore.dailyRewardInfo) {
+      this.logger.error('主站每日任务完成情况不存在，不执行每日观看视频任务')
+      this.status = 'error'
+      return false
+    }
+    if (!biliStore.dynamicVideos) {
+      this.logger.error('动态视频数据不存在，不执行每日观看视频任务')
+      this.status = 'error'
+      return false
+    }
+
+    return true
+  }
+
   public async run() {
     this.logger.log('每日观看视频模块开始运行')
-    if (this.config.enabled) {
+
+    if (!isTimestampToday(this.config._lastCompleteTime)) {
+      if (!this.runCheck()) {
+        return
+      }
+
       const biliStore = useBiliStore()
-      if (!isTimestampToday(this.config._lastCompleteTime)) {
-        this.status = 'running'
-        if (biliStore.dailyRewardInfo && !biliStore.dailyRewardInfo.watch) {
-          const aid = this.getAid()
-          await this.watch(aid)
-        } else {
-          this.config._lastCompleteTime = tsm()
-          this.status = 'done'
-          this.logger.log('每日观看视频任务已完成')
-        }
+      this.status = 'running'
+
+      if (!biliStore.dailyRewardInfo!.watch) {
+        const aid = this.getAid()
+        await this.watch(aid)
       } else {
-        if (!isNowIn(0, 0, 0, 5)) {
-          this.logger.log('今天已经完成过每日观看视频任务了')
-          this.status = 'done'
-        } else {
-          this.logger.log('昨天的每日观看视频任务已经完成过了，等到今天的00:05再执行')
-        }
+        this.config._lastCompleteTime = tsm()
+        this.status = 'done'
+        this.logger.log('每日观看视频任务已完成')
+      }
+    } else {
+      if (isNowIn(0, 0, 0, 5)) {
+        this.logger.log('昨天的每日观看视频任务已经完成过了，等到今天的00:05再执行')
+      } else {
+        this.logger.log('今天已经完成过每日观看视频任务了')
+        this.status = 'done'
       }
     }
 

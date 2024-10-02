@@ -9,36 +9,49 @@ import { dce, isTargetFrame } from './library/dom'
 import * as MyIconsVue from './components/icons'
 import './assets/css/base.css'
 import Logger from './library/logger'
-;(function () {
-  if (isTargetFrame()) {
-    const app = createApp(App)
-    const pinia = createPinia()
+import { useModuleStore } from './stores/useModuleStore'
+import { waitForMoment } from './library/utils'
 
-    app.use(ElementPlus)
-    app.use(pinia)
+const logger = new Logger('Main')
 
-    const cacheStore = useCacheStore()
-    if (cacheStore.checkIfOtherScriptsRunning()) {
-      new Logger('main.ts').log('其它页面上的BLTH正在运行，当前脚本停止运行')
-      return
-    }
-    cacheStore.startAliveHeartBeat()
+logger.log('document.readyState', document.readyState)
 
-    for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-      app.component(key, component)
-    }
+const pinia = createPinia()
 
-    for (const [key, component] of Object.entries(MyIconsVue)) {
-      app.component(key, component)
-    }
+const cacheStore = useCacheStore(pinia)
+const moduleStore = useModuleStore(pinia)
 
-    app.mount(
-      (() => {
-        const app = dce('div')
-        app.id = 'BLTH'
-        document.body.append(app)
-        return app
-      })()
-    )
+cacheStore.checkCurrentScriptType()
+logger.log('当前脚本的类型为', cacheStore.currentScriptType)
+
+if (cacheStore.currentScriptType === 'Main') {
+  cacheStore.startMainBLTHAliveHeartBeat()
+}
+
+moduleStore.loadModules('unknown')
+
+await waitForMoment('document-body')
+
+if (isTargetFrame()) {
+  const app = createApp(App)
+
+  app.use(ElementPlus)
+  app.use(pinia)
+
+  for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component)
   }
-})()
+
+  for (const [key, component] of Object.entries(MyIconsVue)) {
+    app.component(key, component)
+  }
+
+  moduleStore.loadModules('yes')
+
+  await waitForMoment('document-end')
+
+  const div = dce('div')
+  div.id = 'BLTH'
+  document.body.append(div)
+  app.mount(div)
+}

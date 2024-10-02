@@ -1,34 +1,58 @@
 import { VNode } from 'vue'
 
-interface IhelpInfoItem {
+interface HelpInfoItem {
   title: string
   message: string | VNode | (() => VNode)
 }
 
-interface IhelpInfo {
+interface HelpInfo {
   DailyTasks: {
     MainSiteTasks: {
-      login: IhelpInfoItem
-      watch: IhelpInfoItem
-      coin: IhelpInfoItem
-      share: IhelpInfoItem
+      login: HelpInfoItem
+      watch: HelpInfoItem
+      coin: HelpInfoItem
+      share: HelpInfoItem
     }
     LiveTasks: {
-      sign: IhelpInfoItem
-      appUser: IhelpInfoItem
+      sign: HelpInfoItem
       medalTasks: {
-        list: IhelpInfoItem
-        like: IhelpInfoItem
-        danmu: IhelpInfoItem
-        watch: IhelpInfoItem
+        list: HelpInfoItem
+        light: {
+          main: HelpInfoItem
+          like: HelpInfoItem
+          danmu: HelpInfoItem
+        }
+        watch: HelpInfoItem
       }
     }
     OtherTasks: {
-      groupSign: IhelpInfoItem
-      silverToCoin: IhelpInfoItem
-      coinToSilver: IhelpInfoItem
+      groupSign: HelpInfoItem
+      silverToCoin: HelpInfoItem
+      coinToSilver: HelpInfoItem
+      getYearVipPrivilege: HelpInfoItem
     }
+  }
+  EnhanceExperience: {
+    switchLiveStreamQuality: HelpInfoItem
+    banp2p: HelpInfoItem
+    noReport: HelpInfoItem
+    noSleep: HelpInfoItem
+    invisibility: HelpInfoItem
+  }
+  RemoveElement: {
+    removePKBox: HelpInfoItem
+    removeLiveWaterMark: HelpInfoItem
+    removeShopPopover: HelpInfoItem
+    removeGameParty: HelpInfoItem
+    removeGiftPopover: HelpInfoItem
+    removeMicPopover: HelpInfoItem
+    removeComboCard: HelpInfoItem
+    removeRank: HelpInfoItem
+    removeHeaderStuff: HelpInfoItem
+    removeFlipView: HelpInfoItem
+    removeRecommendRoom: HelpInfoItem
+    removeLiveMosaic: HelpInfoItem
   }
 }
 
-export { IhelpInfoItem, IhelpInfo }
+export { HelpInfoItem, HelpInfo }

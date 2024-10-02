@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Istatus } from '../../types/moduleStatus'
+import type { ModuleStatusTypes } from '@/types'
 
 defineProps<{
-  status: Istatus
+  status: ModuleStatusTypes
 }>()
 </script>
 

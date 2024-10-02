@@ -1,4 +1,4 @@
-interface ImoduleConfig {
+interface ModuleConfig {
   DailyTasks: {
     MainSiteTasks: {
       login: {
@@ -24,24 +24,17 @@ interface ImoduleConfig {
         enabled: boolean
         _lastCompleteTime: number
       }
-      appUser: {
-        enabled: boolean
-        _lastCompleteTime: number
-      }
       medalTasks: {
-        danmu: {
+        light: {
           enabled: boolean
-          list: string[]
-          _lastCompleteTime: number
-        }
-        like: {
-          enabled: boolean
+          mode: 'like' | 'danmu'
+          danmuList: string[]
           _lastCompleteTime: number
         }
         watch: {
           enabled: boolean
           time: number
-          _watchedSecondsToday: number
+          _watchingProgress: Record<string, number>
           _lastWatchTime: number
           _lastCompleteTime: number
         }
@@ -63,18 +56,88 @@ interface ImoduleConfig {
         num: number
         _lastCompleteTime: number
       }
+      getYearVipPrivilege: {
+        enabled: boolean
+        _nextReceiveTime: number
+      }
+    }
+  }
+  EnhanceExperience: {
+    switchLiveStreamQuality: {
+      enabled: boolean
+      qualityDesc: string
+    }
+    banp2p: {
+      enabled: boolean
+    }
+    noReport: {
+      enabled: boolean
+    }
+    noSleep: {
+      enabled: boolean
+    }
+    invisibility: {
+      enabled: boolean
+    }
+  }
+  RemoveElement: {
+    removePKBox: {
+      enabled: boolean
+    }
+    removeLiveWaterMark: {
+      enabled: boolean
+    }
+    removeShopPopover: {
+      enabled: boolean
+    }
+    removeGameParty: {
+      enabled: boolean
+    }
+    removeGiftPopover: {
+      enabled: boolean
+    }
+    removeMicPopover: {
+      enabled: boolean
+    }
+    removeComboCard: {
+      enabled: boolean
+    }
+    removeRank: {
+      enabled: boolean
+    }
+    removeHeaderStuff: {
+      enabled: boolean
+    }
+    removeFlipView: {
+      enabled: boolean
+    }
+    removeRecommendRoom: {
+      enabled: boolean
+    }
+    removeLiveMosaic: {
+      enabled: boolean
     }
   }
 }
 
-interface IuiConfig {
+type MenuIndex =
+  | 'MainSiteTasks'
+  | 'LiveTasks'
+  | 'OtherTasks'
+  | 'EnhanceExperience'
+  | 'RemoveElement'
+  | 'ScriptSettings'
+
+interface UiConfig {
   isCollapse: boolean
   isShowPanel: boolean
-  activeMenuIndex: string
+  activeMenuIndex: MenuIndex
+  panelWidthPercent: number
+  medalInfoPanelSortMode: boolean
 }
 
-interface Icache {
+interface Cache {
   lastAliveHeartBeatTime: number
 }
 
-export { ImoduleConfig, IuiConfig, Icache }
+export { ModuleConfig, UiConfig, Cache, MenuIndex }

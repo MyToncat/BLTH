@@ -1,16 +1,18 @@
-import { IuiConfig, ImoduleConfig, Icache } from '../../types'
+import type { UiConfig, ModuleConfig, Cache } from '@/types'
 
-interface IdefaultValues {
-  ui: IuiConfig
-  modules: ImoduleConfig
-  cache: Icache
+interface DefaultValues {
+  ui: UiConfig
+  modules: ModuleConfig
+  cache: Cache
 }
 
-const defaultValues: IdefaultValues = {
+const defaultValues: DefaultValues = {
   ui: {
     isCollapse: false,
     isShowPanel: true,
-    activeMenuIndex: 'MainSiteTasks'
+    activeMenuIndex: 'MainSiteTasks',
+    panelWidthPercent: 40,
+    medalInfoPanelSortMode: false
   },
   modules: {
     DailyTasks: {
@@ -38,14 +40,11 @@ const defaultValues: IdefaultValues = {
           enabled: false,
           _lastCompleteTime: 0
         },
-        appUser: {
-          enabled: false,
-          _lastCompleteTime: 0
-        },
         medalTasks: {
-          danmu: {
+          light: {
             enabled: false,
-            list: [
+            mode: 'danmu',
+            danmuList: [
               '(⌒▽⌒)',
               '（￣▽￣）',
               '(=・ω・=)',
@@ -64,14 +63,10 @@ const defaultValues: IdefaultValues = {
             ],
             _lastCompleteTime: 0
           },
-          like: {
-            enabled: false,
-            _lastCompleteTime: 0
-          },
           watch: {
             enabled: false,
-            time: 70,
-            _watchedSecondsToday: 0,
+            time: 25,
+            _watchingProgress: {},
             _lastWatchTime: 0,
             _lastCompleteTime: 0
           },
@@ -92,7 +87,67 @@ const defaultValues: IdefaultValues = {
           enabled: false,
           num: 1,
           _lastCompleteTime: 0
+        },
+        getYearVipPrivilege: {
+          enabled: false,
+          _nextReceiveTime: 0
         }
+      }
+    },
+    EnhanceExperience: {
+      switchLiveStreamQuality: {
+        enabled: false,
+        qualityDesc: '原画'
+      },
+      banp2p: {
+        enabled: false
+      },
+      noReport: {
+        enabled: false
+      },
+      noSleep: {
+        enabled: false
+      },
+      invisibility: {
+        enabled: false
+      }
+    },
+    RemoveElement: {
+      removePKBox: {
+        enabled: false
+      },
+      removeLiveWaterMark: {
+        enabled: false
+      },
+      removeShopPopover: {
+        enabled: false
+      },
+      removeGameParty: {
+        enabled: false
+      },
+      removeGiftPopover: {
+        enabled: false
+      },
+      removeMicPopover: {
+        enabled: false
+      },
+      removeComboCard: {
+        enabled: false
+      },
+      removeRank: {
+        enabled: false
+      },
+      removeHeaderStuff: {
+        enabled: false
+      },
+      removeFlipView: {
+        enabled: false
+      },
+      removeRecommendRoom: {
+        enabled: false
+      },
+      removeLiveMosaic: {
+        enabled: false
       }
     }
   },

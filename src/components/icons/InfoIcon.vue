@@ -1,30 +1,27 @@
 <script setup lang="ts">
 import { ElMessageBox } from 'element-plus'
-import help_info from '../../library/help-info'
-import _ from 'lodash'
-import { IhelpInfoItem } from '../../types'
+import type { HelpInfoItem } from '@/types'
 
 const props = defineProps<{
-  id: string
+  item: HelpInfoItem
 }>()
 
 /**
  * 显示提示弹窗
  */
 const open = () => {
-  const { title, message }: IhelpInfoItem = _.get(help_info, props.id, {
-    title: '无',
-    message: '无'
-  })
+  const { title, message }: HelpInfoItem = props.item
+
   ElMessageBox({
     title: title,
     message: message,
     lockScroll: false,
     autofocus: true,
     confirmButtonText: 'OK'
-  })
+  }).catch(() => {})
 }
 </script>
+
 <template>
   <el-icon class="info-icon" @click="open">
     <svg

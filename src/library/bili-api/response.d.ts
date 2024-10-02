@@ -75,6 +75,13 @@ declare namespace Live {
     data: { silver: number }
     message: string
   }
+
+  interface WearMedal {
+    code: number
+    message: string
+    ttl: number
+    data: {}
+  }
 }
 
 declare namespace LiveTrace {
@@ -97,8 +104,8 @@ declare namespace Main {
   interface Nav {
     code: number
     message: string
-    data: MainData.Nav.Data
     ttl: number
+    data: MainData.Nav.Data
   }
 
   interface Reward {
@@ -140,6 +147,28 @@ declare namespace Main {
     message: string
     ttl: number
     data: MainData.VideoRelation.Data
+  }
+
+  namespace Vip {
+    interface MyPrivilege {
+      code: number
+      message: string
+      ttl: number
+      data: MainData.Vip.MyPrivilege.Data
+    }
+
+    interface ReceivePrivilege {
+      code: number
+      message: string
+      ttl: number
+    }
+
+    interface AddExperience {
+      code: number
+      message: string
+      ttl: number
+      data: MainData.Vip.AddExperience.Data
+    }
   }
 }
 

@@ -1,21 +1,22 @@
 <script setup lang="ts">
-import { useUIStore } from '../stores/useUIStore'
+import { useUIStore } from '@/stores/useUIStore'
+import type { MenuIndex } from '@/types'
 
 const uiStore = useUIStore()
 
-interface menuItem {
+interface MenuItem {
   icon: string
   title: string
   index: string
-  subs?: subMenuItem[]
+  subs?: SubMenuItem[]
 }
 
-interface subMenuItem {
+interface SubMenuItem {
   title: string
   index: string
 }
 
-const items: menuItem[] = [
+const items: MenuItem[] = [
   {
     icon: 'Tasks',
     title: '每日任务',
@@ -34,6 +35,21 @@ const items: menuItem[] = [
         index: 'OtherTasks'
       }
     ]
+  },
+  {
+    icon: 'Monitor',
+    title: '体验优化',
+    index: 'EnhanceExperience'
+  },
+  {
+    icon: 'Scissor',
+    title: '移除元素',
+    index: 'RemoveElement'
+  },
+  {
+    icon: 'Setting',
+    title: '设置',
+    index: 'ScriptSettings'
   }
 ]
 </script>
@@ -44,7 +60,7 @@ const items: menuItem[] = [
     :style="{ 'min-height': uiStore.scrollBarHeight }"
     :collapse="uiStore.uiConfig.isCollapse"
     unique-opened
-    @select="uiStore.setActiveMenuIndex"
+    @select="(index: string) => uiStore.setActiveMenuIndex(index as MenuIndex)"
     id="aside-el-menu"
   >
     <template v-for="item in items">
@@ -56,11 +72,9 @@ const items: menuItem[] = [
             </el-icon>
             <span>{{ item.title }}</span>
           </template>
-          <template v-for="subItem in item.subs" :key="subItem.index">
-            <el-menu-item :index="subItem.index">
-              {{ subItem.title }}
-            </el-menu-item>
-          </template>
+          <el-menu-item v-for="subItem in item.subs" :index="subItem.index" :key="subItem.index">
+            {{ subItem.title }}
+          </el-menu-item>
         </el-sub-menu>
       </template>
       <template v-else>
@@ -76,3 +90,9 @@ const items: menuItem[] = [
     </template>
   </el-menu>
 </template>
+
+<style scoped>
+#aside-el-menu {
+  height: 100%;
+}
+</style>
